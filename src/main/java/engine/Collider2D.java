@@ -18,7 +18,7 @@ public class Collider2D {
     }
 
     public Vector2f getCenter() {
-        return center;
+        return new Vector2f(parent.getPosition().x + parent.getSize().x / 2, parent.getPosition().y + parent.getSize().y / 2);
     }
 
     public void setCenter(Vector2f center) {

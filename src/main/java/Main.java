@@ -66,36 +66,29 @@ public class Main {
     public static void main(String[] args) {
         Main m = new Main("Physics2D", 1000, 1000);
 
-        /*for (int i = 0; i < 700; i++) {
+        /*for (int i = 0; i < 150; i++) {
             Object2D box = new Object2D(new Quad());
             box.setPosition(new Vector2f((float) (i * (50 + Math.random() * 10))% 800,(float)Math.random() * 500));
             box.setSize(new Vector2f(20, 20));
-            box.addRigidBody2D(new RigidBody2D());
+            box.addRigidBody2D(new RigidBody2D(1));
             box.addCollider2D(new Collider2D());
+            box.getRb2d().setVX((float) ((Math.random() * 2 - 1) ));
+            box.getRb2d().setVY((float) ((Math.random() * 2 - 1) ));
         }*/
 
 
         Object2D ground = new Object2D(new Quad());
         ground.setPosition(new Vector2f(0,900));
         ground.setSize(new Vector2f(1500, 200));
-        ground.addRigidBody2D(new RigidBody2D());
+        ground.addRigidBody2D(new RigidBody2D(100));
         ground.getRb2d().setStatic(true);
         ground.addCollider2D(new Collider2D());
 
-       /* Object2D box3 = new Object2D(new Quad(Color.RED));
-        box3.setPosition(new Vector2f(425, 400));
-        box3.setSize(new Vector2f(50, 50));
-        box3.addRigidBody2D(new RigidBody2D());
-        box3.addCollider2D(new Collider2D());
 
-        Object2D box2 = new Object2D(new Quad(Color.BLUE));
-        box2.setPosition(new Vector2f(425, 480));
-        box2.setSize(new Vector2f(50, 50));
-        box2.addRigidBody2D(new RigidBody2D());
-        box2.addCollider2D(new Collider2D());
+
 
         Object2D box1 = new Object2D(new Quad(Color.GREEN));
-        box1.setPosition(new Vector2f(425, 570));
+        box1.setPosition(new Vector2f(425, 360));
         box1.setSize(new Vector2f(50, 50));
         box1.addRigidBody2D(new RigidBody2D());
         box1.addCollider2D(new Collider2D());
@@ -103,8 +96,8 @@ public class Main {
         Object2D box4 = new Object2D(new Quad(Color.BLACK));
         box4.setPosition(new Vector2f(425, 100));
         box4.setSize(new Vector2f(50, 50));
-        box4.addRigidBody2D(new RigidBody2D());
-        box4.addCollider2D(new Collider2D());*/
+        box4.addRigidBody2D(new RigidBody2D(5));
+        box4.addCollider2D(new Collider2D());
 
         /*m.render();
         Display.update();*/

@@ -11,7 +11,7 @@ public class RigidBody2D {
 
 
     public RigidBody2D() {
-        this(0);
+        this(1);
     }
 
 

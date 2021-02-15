@@ -18,7 +18,7 @@ public class Engine2D {
         // Positional Logic
         for (RigidBody2D rb2d : rb2dList) {
             if (!rb2d.isStatic()) {
-                rb2d.applyForce(new Vector2f(0, 0.5f));
+                rb2d.applyForce(new Vector2f(0, 0.05f));
                 //rb2d.applyForce(new Vector2f(0.02f, 0f));
                 rb2d.updateVelocity();
 
@@ -27,137 +27,75 @@ public class Engine2D {
             }
         }
 
-        // Collision Detection Static
-        for (Collider2D obj1 : c2dList) {
-            if (obj1.getParent().getRb2d().isStatic()) {
-                for (Collider2D obj2 : c2dList) {
-                    if (obj1 != obj2 && obj1.isColliding(obj2)) {
-                        resolveCollision(obj2.getParent(), obj1.getParent());
+        checkCollisionStatic();
 
-                        test(obj2.getParent());
-                    }
-                }
-            }
-        }
 
-        // Collision Detection Non Static
-        for (Collider2D obj1 : c2dList) {
-            if (!obj1.getParent().getRb2d().isStatic()) {
-                for (Collider2D obj2 : c2dList) {
-                    if (obj1 != obj2 && !obj2.getParent().getRb2d().isStatic() && obj1.isColliding(obj2)) {
-                        resolveCollision(obj1.getParent(), obj2.getParent());
-                        test(obj1.getParent());
+        Collider2D c1;
+        Collider2D c2;
+
+        for (int i = 0; i < c2dList.size(); i++) {
+            c1 = c2dList.get(i);
+
+            for (int j = i + 1; j < c2dList.size(); j++) {
+                c2 = c2dList.get(j);
+
+                if (c1.isColliding(c2) && !c1.getParent().getRb2d().isStatic() && !c2.getParent().getRb2d().isStatic()) {
+                    Object2D obj1 = c1.getParent();
+                    Object2D obj2 = c2.getParent();
+
+                    Vector2f vCollision = new Vector2f(c2.getCenter().x - c1.getCenter().x, c2.getCenter().y - c1.getCenter().y);
+                    float distance = (float) Math.sqrt((c2.getCenter().x - c1.getCenter().x) * (c2.getCenter().x - c1.getCenter().x) +
+                            (c2.getCenter().y - c1.getCenter().y) * (c2.getCenter().y - c1.getCenter().y));
+
+                    Vector2f vCollisionNorm = new Vector2f(vCollision.x / distance, vCollision.y / distance);
+                    Vector2f vRelativeVelocity = new Vector2f(obj1.getRb2d().getVX() - obj2.getRb2d().getVX(), obj1.getRb2d().getVY() - obj2.getRb2d().getVY());
+                    float speed = vRelativeVelocity.x * vCollisionNorm.x + vRelativeVelocity.y * vCollisionNorm.y;
+                    //speed *= 0.8f;
+
+                    if (speed < 0) {
+                        break;
                     }
+
+                    float impulse = 2 * speed / (obj1.getRb2d().getMass() + obj2.getRb2d().getMass());
+                    float factor = 1;
+                    if (!obj1.getRb2d().isStatic()) {
+                        obj1.getRb2d().setVX(obj1.getRb2d().getVX() - (impulse * factor * obj2.getRb2d().getMass() * vCollisionNorm.x));
+                        //obj1.getRb2d().setVY(obj1.getRb2d().getVY() - (impulse * factor * obj2.getRb2d().getMass() * vCollisionNorm.y));
+                    }
+
+                    if (!obj2.getRb2d().isStatic()) {
+                        //obj2.getRb2d().setVX(obj1.getRb2d().getVX() + (impulse * factor * obj1.getRb2d().getMass() * vCollisionNorm.x));
+                        obj2.getRb2d().setVY(obj1.getRb2d().getVY() + (impulse * factor * obj1.getRb2d().getMass() * vCollisionNorm.y));
+                    }
+
                 }
+
+
             }
 
         }
     }
 
 
-    private static void test(Object2D obj1) {
+    public static void checkCollisionStatic() {
+        float restitution = 0.5f;
 
-        boolean isColliding = false;
+        for (Collider2D collider : c2dList) {
+            if (collider.getParent().getRb2d().isStatic()) {
+                for (Collider2D collider2 : c2dList) {
+                    if (!collider2.getParent().getRb2d().isStatic() && collider.isColliding(collider2)) {
+                        Object2D objStatic = collider.getParent();
+                        Object2D obj = collider2.getParent();
 
-        Collider2D c1 = obj1.getC2d();
-        RigidBody2D r1 = obj1.getRb2d();
-
-        for (Collider2D c2 : c2dList) {
-            if (c1 != c2 && !c2.getParent().getRb2d().isStatic() && c1.isColliding(c2)) {
-                resolveCollision(c2.getParent(), obj1);
-                test(c2.getParent());
-            }
-        }
-    }
-
-
-    // Collision Resolution
-    private static void resolveCollision(Object2D o1, Object2D o2) {
-
-        Collider2D c1 = o1.getC2d();
-        Collider2D c2 = o2.getC2d();
-
-        float restitution = 0.25f;
-        float treshold = 0.8f;
-
-        float dx = (c2.getCenter().x - c1.getCenter().x) / c2.getSize().x / 2;
-        float dy = (c2.getCenter().y - c1.getCenter().y) / c2.getSize().y / 2;
-
-        float absDX = Math.abs(dx);
-        float absDY = Math.abs(dy);
-
-        //System.out.println("Vitesse :" + o1.getRb2d().getVelocity());
-
-
-       /* if (Math.abs(absDX - absDY) < 0.1f) {
-            if (dx < 0) {
-                // Set the player x to the right side
-                o1.setX(o2.getX() + c2.getSize().x);
-
-                // If the player is approaching from negative X
-            } else {
-
-                // Set the player x to the left side
-                o1.setX(o2.getX() - c1.getSize().x);
-            }
-
-            // If the player is approaching from positive Y
-            if (dy < 0) {
-
-                // Set the player y to the bottom
-                o1.setY(o2.getY() + c2.getSize().y);
-            } else {
-                o1.setY(o2.getY() - c1.getSize().y);
-            }
-
-            if (Math.random() < 0.5f) {
-                o1.getRb2d().setVX(-o1.getRb2d().getVX() * restitution);
-
-                if (Math.abs(o1.getRb2d().getVX()) < treshold) {
-                    o1.getRb2d().setVX(0.0f);
-                }
-            } else {
-                o1.getRb2d().setVY(-o1.getRb2d().getVY() * restitution);
-                if (Math.abs(o1.getRb2d().getVY()) < treshold) {
-                    o1.getRb2d().setVY(0.0f);
+                        /* Venant du dessus */
+                        if (obj.getY() < objStatic.getY()) {
+                            obj.getRb2d().setVY(-Math.abs(obj.getRb2d().getVY()) * restitution);
+                            obj.setY(objStatic.getY() - obj.getSize().y);
+                        }
+                    }
                 }
             }
-        } else */if (absDX > absDY) {
 
-            // Si arrive de gauche
-            if (dx < 0) {
-                o1.setX(o2.getX() + c2.getSize().x);
-
-            } else {
-                // Si arrive de droite
-                o1.setX(o2.getX() - c1.getSize().x);
-            }
-
-            // Velocity component
-            o1.getRb2d().setVX(-o1.getRb2d().getVX() * restitution);
-
-            if (Math.abs(o1.getRb2d().getVX()) < treshold) {
-                o1.getRb2d().setVX(0.0f);
-            }
-
-            // Collision haut et bas
-        } else {
-
-            // Si arrive du haut
-            if (dy < 0) {
-                o1.setY(o2.getY() + c2.getSize().y);
-
-            } else {
-                // Si arrive du bas
-                o1.setY(o2.getY() - c1.getSize().y);
-            }
-
-            // Velocity component
-            o1.getRb2d().setVY(-o1.getRb2d().getVY() * restitution);
-            if (Math.abs(o1.getRb2d().getVY()) < treshold) {
-                o1.getRb2d().setVY(0.0f);
-                System.out.println("Reset de la vitesse");
-            }
         }
     }
 }

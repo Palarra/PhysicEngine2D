@@ -5,18 +5,20 @@ import org.lwjgl.util.vector.Vector2f;
 public class RigidBody2D {
     private Object2D parent;
     private float mass;
+    private float restitution;
     private Vector2f velocity;
     private Vector2f acceleration;
     private boolean isStatic;
 
 
     public RigidBody2D() {
-        this(1);
+        this(1, 0);
     }
 
 
-    public RigidBody2D(float mass) {
+    public RigidBody2D(float mass, float restitution) {
         this.mass = mass;
+        this.restitution = restitution;
         velocity = new Vector2f(0f, 0f);
         acceleration = new Vector2f(0f, 0f);
         isStatic = false;
@@ -60,6 +62,14 @@ public class RigidBody2D {
 
     public void setMass(float mass) {
         this.mass = mass;
+    }
+
+    public float getRestitution() {
+        return restitution;
+    }
+
+    public void setRestitution(float restitution) {
+        this.restitution = restitution;
     }
 
     public boolean isStatic() {

@@ -1,7 +1,7 @@
 package engine;
 
-import engine.Engine2D;
-import engine.Object2D;
+import engine.collision.BoxCollider2D;
+import engine.collision.Collider2D;
 import graphic.Color;
 import graphic.Quad;
 import org.lwjgl.input.Mouse;
@@ -28,7 +28,7 @@ public class World {
             box3.setPosition(new Vector2f(Mouse.getX(), Display.getHeight() - Mouse.getY()));
             box3.setSize(new Vector2f(20, 20));
             box3.addRigidBody2D(new RigidBody2D());
-            box3.addCollider2D(new Collider2D());
+            box3.addCollider2D(new BoxCollider2D());
         }
     }
 

@@ -1,5 +1,6 @@
 package engine;
 
+import engine.collision.Collider2D;
 import graphic.Model;
 import org.lwjgl.util.vector.Vector2f;
 
